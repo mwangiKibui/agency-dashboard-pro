@@ -25,6 +25,7 @@
     }
   },
   "rules": {
+    "default-param-list":0,
     "no-shadow": 0,
     "no-console": 0,
     "react/jsx-key": 1,

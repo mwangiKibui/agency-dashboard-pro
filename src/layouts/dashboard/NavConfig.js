@@ -12,17 +12,17 @@ const navConfig = [
     icon: getIcon('eva:pie-chart-2-fill'),
   },
   {
-    title: 'user',
+    title: 'clients',
     path: '/dashboard/user',
     icon: getIcon('eva:people-fill'),
   },
   {
-    title: 'product',
+    title: 'List Client Transactions',
     path: '/dashboard/products',
     icon: getIcon('eva:shopping-bag-fill'),
   },
   {
-    title: 'blog',
+    title: 'Record Client Transactions',
     path: '/dashboard/blog',
     icon: getIcon('eva:file-text-fill'),
   },
@@ -36,11 +36,11 @@ const navConfig = [
     path: '/register',
     icon: getIcon('eva:person-add-fill'),
   },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: getIcon('eva:alert-triangle-fill'),
-  },
+  // {
+  //   title: 'Not found',
+  //   path: '/404',
+  //   icon: getIcon('eva:alert-triangle-fill'),
+  // },
 ];
 
 export default navConfig;
