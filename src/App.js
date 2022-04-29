@@ -1,4 +1,4 @@
-//import { Provider } from "react-redux";
+// import { Provider } from "react-redux";
 // routes
 import Router from './routes';
 // theme
