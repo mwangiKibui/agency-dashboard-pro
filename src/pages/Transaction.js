@@ -25,20 +25,21 @@ import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
 import { 
-  UserListHead, 
-  // UserListToolbar, 
-  UserMoreMenu 
+    UserListHead, 
+    // UserListToolbar, 
+    UserMoreMenu 
 } from '../sections/@dashboard/user';
 // mock
-import USERLIST from '../_mock/user';
+// import USERLIST from '../_mock/user';
+import TRANSACTIONLIST from '../_mock/transaction';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  // { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
+  { id: 'phone', label: 'Phone', alignRight: false },
+  { id: 'vehicle_registration_number', label: 'Vehicle Registration Number', alignRight: false },
+  { id: 'Amount', label: 'Amount (KES)', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' },
 ];
@@ -83,7 +84,10 @@ export default function User() {
 
   const [orderBy, setOrderBy] = useState('name');
 
-  const [filterName, setFilterName] = useState('');
+  const [
+    filterName, 
+    // setFilterName
+  ] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -95,7 +99,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = TRANSACTIONLIST.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -130,9 +134,9 @@ export default function User() {
   //   setFilterName(event.target.value);
   // };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - TRANSACTIONLIST.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(TRANSACTIONLIST, getComparator(order, orderBy), filterName);
 
   const isUserNotFound = filteredUsers.length === 0;
 
@@ -141,10 +145,10 @@ export default function User() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Clients
+            Client Transactions
           </Typography>
           <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Client
+            New Transaction
           </Button>
         </Stack>
 
@@ -158,7 +162,7 @@ export default function User() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={TRANSACTIONLIST.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
@@ -167,12 +171,13 @@ export default function User() {
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { 
                       id, 
-                      name, 
-                      // role, 
+                      name,
+                      avatarUrl,
+                      phone, 
                       status, 
-                      company, 
-                      avatarUrl, 
-                      isVerified 
+                      vehicleRegistrationNumber, 
+                      amount, 
+                      // isVerified 
                     } = row;
                     const isItemSelected = selected.indexOf(name) !== -1;
 
@@ -196,11 +201,11 @@ export default function User() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        {/* <TableCell align="left">{role}</TableCell> */}
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                        <TableCell align="left">{phone}</TableCell>
+                        <TableCell align="left">{vehicleRegistrationNumber}</TableCell>
+                        <TableCell align="left">{amount}</TableCell>
                         <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
+                          <Label variant="ghost" color={(status === 'expired' && 'error') || 'success'}>
                             {sentenceCase(status)}
                           </Label>
                         </TableCell>
@@ -234,7 +239,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={TRANSACTIONLIST.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

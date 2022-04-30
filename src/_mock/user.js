@@ -12,15 +12,18 @@ const users = [...Array(24)].map((_, index) => ({
   status: sample(['active', 'banned']),
   role: sample([
     'Leader',
-    'Hr Manager',
-    'UI Designer',
-    'UX Designer',
-    'UI/UX Designer',
-    'Project Manager',
-    'Backend Developer',
-    'Full Stack Designer',
-    'Front End Developer',
-    'Full Stack Developer',
+    // 'Hr Manager',
+    // 'UI Designer',
+    // 'UX Designer',
+    // 'UI/UX Designer',
+    // 'Project Manager',
+    // 'Backend Developer',
+    // 'Full Stack Designer',
+    // 'Front End Developer',
+    // 'Full Stack Developer',
+    'Vehicle Dealer',
+    'Health Dealer',
+    'Market Dealer'
   ]),
 }));
 

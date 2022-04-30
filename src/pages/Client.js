@@ -30,15 +30,16 @@ import {
   UserMoreMenu 
 } from '../sections/@dashboard/user';
 // mock
-import USERLIST from '../_mock/user';
+// import USERLIST from '../_mock/user';
+import CLIENTLIST from '../_mock/client';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
+  { id: 'Phone', label: 'Phone', alignRight: false },
   // { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
+  { id: 'vehicle_registration_number', label: 'Vehicle Registration Number', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' },
 ];
@@ -83,7 +84,10 @@ export default function User() {
 
   const [orderBy, setOrderBy] = useState('name');
 
-  const [filterName, setFilterName] = useState('');
+  const [
+    filterName, 
+    // setFilterName
+  ] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -95,7 +99,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = CLIENTLIST.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -130,9 +134,9 @@ export default function User() {
   //   setFilterName(event.target.value);
   // };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - CLIENTLIST.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(CLIENTLIST, getComparator(order, orderBy), filterName);
 
   const isUserNotFound = filteredUsers.length === 0;
 
@@ -158,7 +162,7 @@ export default function User() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={CLIENTLIST.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
@@ -168,11 +172,10 @@ export default function User() {
                     const { 
                       id, 
                       name, 
-                      // role, 
+                      phone, 
                       status, 
-                      company, 
-                      avatarUrl, 
-                      isVerified 
+                      vehicleRegistrationNumber, 
+                      avatarUrl                       
                     } = row;
                     const isItemSelected = selected.indexOf(name) !== -1;
 
@@ -196,9 +199,8 @@ export default function User() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        {/* <TableCell align="left">{role}</TableCell> */}
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                        <TableCell align="left">{phone}</TableCell>
+                        <TableCell align="left">{vehicleRegistrationNumber}</TableCell>
                         <TableCell align="left">
                           <Label variant="ghost" color={(status === 'banned' && 'error') || 'success'}>
                             {sentenceCase(status)}
@@ -234,7 +236,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={CLIENTLIST.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet,Navigate} from 'react-router-dom';
+import { useSelector } from 'react-redux';
 // material
 import { styled } from '@mui/material/styles';
 //
@@ -34,7 +35,8 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-
+  const { isLoggedIn } = useSelector(state => state.auth);
+  if(!isLoggedIn) return <Navigate to="/login" />;
   return (
     <RootStyle>
       <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
