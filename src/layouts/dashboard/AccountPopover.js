@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
-import { Link as RouterLink,useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton } from '@mui/material';
@@ -38,6 +38,7 @@ export default function AccountPopover() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [open, setOpen] = useState(null);
+  const { user } = useSelector((state) => state.auth);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -50,7 +51,7 @@ export default function AccountPopover() {
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
-  }
+  };
 
   return (
     <>
@@ -91,10 +92,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {user.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {user.email}
           </Typography>
         </Box>
 

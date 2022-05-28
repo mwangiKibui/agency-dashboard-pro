@@ -1,20 +1,20 @@
-import { legacy_createStore as createStore } from 'redux';
-import authReducer from './auth/reducer';
+import { legacy_createStore as createStore,applyMiddleware } from 'redux';
+import storage from 'redux-persist/lib/storage';
+import { persistReducer, persistStore } from 'redux-persist';
+import thunk from 'redux-thunk';
+import rootReducer from './reducers';
 
-const initialState = {
-    auth: {
-        isLoggedIn: false,
-        isLoginSuccessful: false,
-        isLoginFailed: false,
-        isRegisterSuccessful: false,
-        isRegisterFailed: false,
-        user: {},
-        error: ''
-    }
-}
+const persistConfig = {
+  key: 'root',
+  storage,
+  // whitelist: ['auth'],
+};
 
-function configureStore() {
-    return createStore(authReducer, initialState);
-  }
-  
-  export default configureStore
+// create a persistent reducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export default () => {
+  const store = createStore(persistedReducer,applyMiddleware(thunk));
+  const persistor = persistStore(store);
+  return { store, persistor };
+};

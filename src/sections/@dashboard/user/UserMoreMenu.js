@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
 // component
@@ -7,10 +8,10 @@ import Iconify from '../../../components/Iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu() {
+export default function UserMoreMenu({ clientDetails }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-
+  const navigate = useNavigate();
   return (
     <>
       <IconButton ref={ref} onClick={() => setIsOpen(true)}>
@@ -27,11 +28,23 @@ export default function UserMoreMenu() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
+        <MenuItem
+          sx={{ color: 'text.secondary' }}
+          onClick={() => {
+            navigate(`/dashboard/transaction/info/${clientDetails._id}`);
+          }}
+        >
+          <ListItemIcon>
+            <Iconify icon="eva:eye-outline" width={24} height={24} />
+          </ListItemIcon>
+          <ListItemText primary="View more" primaryTypographyProps={{ variant: 'body2' }} />
+        </MenuItem>
+
         <MenuItem sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
             <Iconify icon="eva:trash-2-outline" width={24} height={24} />
           </ListItemIcon>
-          <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
+          <ListItemText primary="Deactivate" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
 
         <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
@@ -44,3 +57,7 @@ export default function UserMoreMenu() {
     </>
   );
 }
+
+UserMoreMenu.propTypes = {
+  clientDetails: PropTypes.object,
+};

@@ -1,13 +1,14 @@
 import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
-import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+// import { sentenceCase } from 'change-case';
+import { useEffect, useState } from 'react';
+import { Link as RouterLink, Navigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 // material
 import {
   Card,
   Table,
   Stack,
-  Avatar,
+  // Grid,
   Button,
   Checkbox,
   TableRow,
@@ -17,31 +18,33 @@ import {
   Typography,
   TableContainer,
   TablePagination,
+  CircularProgress,
 } from '@mui/material';
 // components
 import Page from '../components/Page';
-import Label from '../components/Label';
+// import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import Iconify from '../components/Iconify';
 import SearchNotFound from '../components/SearchNotFound';
-import { 
-    UserListHead, 
-    // UserListToolbar, 
-    UserMoreMenu 
+import {
+  UserListHead,
+  // UserListToolbar,
+  UserMoreMenu,
 } from '../sections/@dashboard/user';
 // mock
 // import USERLIST from '../_mock/user';
-import TRANSACTIONLIST from '../_mock/transaction';
+// import CLIENTLIST from '../_mock/client';
+import { fetchTransactions } from '../store/transactions/actions';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'phone', label: 'Phone', alignRight: false },
   { id: 'vehicle_registration_number', label: 'Vehicle Registration Number', alignRight: false },
-  { id: 'Amount', label: 'Amount (KES)', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
+  { id: 'amount_paid', label: 'Amount Paid(KES)', alignRight: false },
+  { id: 'amount_charged', label: 'Amount Charged(KES)', alignRight: false },
+  { id: 'Date', label: 'Date', alignRight: false },
+  { id: '', label: 'Action', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -76,6 +79,30 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function User() {
+  // const navigate = useNavigate();
+  const { transactions, loading, error } = useSelector((state) => state.transaction);
+  const { auth_token: authToken } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const [redirect, setRedirect] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchTransactions(authToken));
+  }, [dispatch, authToken]);
+
+  useEffect(() => {
+    if (transactions) {
+      setTransactionList(transactions);
+    }
+  }, [transactions]);
+
+  useEffect(() => {
+    if (error === 'Invalid token') {
+      setRedirect(true);
+    }
+  }, [error]);
+
+  const [transactionsList, setTransactionList] = useState([]);
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -85,7 +112,7 @@ export default function User() {
   const [orderBy, setOrderBy] = useState('name');
 
   const [
-    filterName, 
+    filterName,
     // setFilterName
   ] = useState('');
 
@@ -99,7 +126,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = TRANSACTIONLIST.map((n) => n.name);
+      const newSelecteds = transactionsList.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -134,112 +161,119 @@ export default function User() {
   //   setFilterName(event.target.value);
   // };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - TRANSACTIONLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - transactionsList.length) : 0;
 
-  const filteredUsers = applySortFilter(TRANSACTIONLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(transactionsList, getComparator(order, orderBy), filterName);
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const emptyRecords = filteredUsers.length === 0;
+
+  if (redirect) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <Page title="User">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Client Transactions
+            Transaction
           </Typography>
-          <Button variant="contained" component={RouterLink} to="#" startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button
+            variant="contained"
+            component={RouterLink}
+            to="/dashboard/record_transaction"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+          >
             New Transaction
           </Button>
         </Stack>
 
         <Card>
           {/* <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} /> */}
+          {loading ? (
+            <Stack direction="row" alignContent="center" justifyContent="center" margin={5}>
+              <CircularProgress color="success" />
+            </Stack>
+          ) : (
+            <Scrollbar>
+              <TableContainer sx={{ minWidth: 800 }}>
+                <Table>
+                  <UserListHead
+                    order={order}
+                    orderBy={orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={transactionsList.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                    onSelectAllClick={handleSelectAllClick}
+                  />
+                  <TableBody>
+                    {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                      const {
+                        client: { name: clientName },
+                        vehicle_registration_number: vehicleRegistrationNumber,
+                        amount_paid: amountPaid,
+                        amount_charged: amountCharged,
+                        createdAt,
+                      } = row;
+                      const isItemSelected = selected.indexOf(row) !== -1;
 
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={TRANSACTIONLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { 
-                      id, 
-                      name,
-                      avatarUrl,
-                      phone, 
-                      status, 
-                      vehicleRegistrationNumber, 
-                      amount, 
-                      // isVerified 
-                    } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                      return (
+                        <TableRow
+                          hover
+                          key={index}
+                          tabIndex={-1}
+                          role="checkbox"
+                          selected={isItemSelected}
+                          aria-checked={isItemSelected}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, row)} />
+                          </TableCell>
+                          <TableCell component="th" scope="row" padding="none">
+                            <Stack direction="row" alignItems="center" spacing={2}>
+                              {/* <Avatar alt={name} src={avatarUrl} /> */}
+                              <Typography variant="subtitle2" noWrap>
+                                {clientName}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="left">{vehicleRegistrationNumber}</TableCell>
+                          <TableCell align="left">{amountPaid.toLocaleString()}</TableCell>
+                          <TableCell align="left">{amountCharged.toLocaleString()}</TableCell>
+                          <TableCell align="left">{new Date(createdAt).toLocaleDateString()}</TableCell>
+                          {/* <TableCell align="left">{idNumber}</TableCell> */}
+                          <TableCell align="right">
+                            <UserMoreMenu clientDetails={row} />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
 
-                    return (
-                      <TableRow
-                        hover
-                        key={id}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onChange={(event) => handleClick(event, name)} />
-                        </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="left">{phone}</TableCell>
-                        <TableCell align="left">{vehicleRegistrationNumber}</TableCell>
-                        <TableCell align="left">{amount}</TableCell>
-                        <TableCell align="left">
-                          <Label variant="ghost" color={(status === 'expired' && 'error') || 'success'}>
-                            {sentenceCase(status)}
-                          </Label>
-                        </TableCell>
-
-                        <TableCell align="right">
-                          <UserMoreMenu />
+                  {emptyRecords && (
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                          <SearchNotFound searchQuery={filterName} />
                         </TableCell>
                       </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
+                    </TableBody>
                   )}
-                </TableBody>
-
-                {isUserNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+                </Table>
+              </TableContainer>
+            </Scrollbar>
+          )}
 
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={TRANSACTIONLIST.length}
+            count={transactionsList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

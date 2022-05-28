@@ -1,4 +1,5 @@
-import { Provider } from "react-redux";
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 // routes
 import Router from './routes';
 // theme
@@ -7,16 +8,22 @@ import ThemeProvider from './theme';
 import ScrollToTop from './components/ScrollToTop';
 import { BaseOptionChartStyle } from './components/chart/BaseOptionChart';
 // ----------------------------------------------------------------------
-import configureStore from "./store/store";
+import configureStore from './store/store';
+
+const { store, persistor } = configureStore();
+
+const Loading = () => <div>Loading...</div>;
 
 export default function App() {
   return (
-    <Provider store={configureStore()}>
-    <ThemeProvider>
-      <ScrollToTop />
-      <BaseOptionChartStyle />
-      <Router />
-    </ThemeProvider>
+    <Provider store={store}>
+      <PersistGate loading={<Loading />} persistor={persistor}>
+        <ThemeProvider>
+          <ScrollToTop />
+          <BaseOptionChartStyle />
+          <Router />
+        </ThemeProvider>
+      </PersistGate>
     </Provider>
   );
 }

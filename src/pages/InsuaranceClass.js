@@ -33,16 +33,14 @@ import {
 } from '../sections/@dashboard/user';
 // mock
 // import USERLIST from '../_mock/user';
-import CLIENTLIST from '../_mock/client';
-import { getClients } from '../store/clients/actions';
+// import CLIENTLIST from '../_mock/client';
+import { fetchInsuaranceClasses } from '../store/insuarance_class/actions';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'phone', label: 'Phone', alignRight: false },
-  { id: 'id_number', label: 'ID Number', alignRight: false },
-  // { id: '' },
+  { id: 'description', label: 'Description', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -77,20 +75,20 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function User() {
-  const { data, isFetching, error } = useSelector((state) => state.clients);
+  const { insuaranceClasses, isFetching, error } = useSelector((state) => state.insuaranceClass);
   const { auth_token: authToken } = useSelector((state) => state.auth);
-  const [redirect, setRedirect] = useState(false);
   const dispatch = useDispatch();
+  const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
-    dispatch(getClients(authToken));
+    dispatch(fetchInsuaranceClasses(authToken));
   }, [dispatch, authToken]);
 
   useEffect(() => {
-    if (data) {
-      setClientList(data);
+    if (insuaranceClasses) {
+      setInsuaranceClassList(insuaranceClasses);
     }
-  }, [data]);
+  }, [insuaranceClasses]);
 
   useEffect(() => {
     if (error === 'Invalid token') {
@@ -98,7 +96,7 @@ export default function User() {
     }
   }, [error]);
 
-  const [clientList, setClientList] = useState([]);
+  const [insuaranceClassList, setInsuaranceClassList] = useState([]);
 
   const [page, setPage] = useState(0);
 
@@ -123,7 +121,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = CLIENTLIST.map((n) => n.name);
+      const newSelecteds = insuaranceClassList.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -158,11 +156,11 @@ export default function User() {
   //   setFilterName(event.target.value);
   // };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clientList.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - insuaranceClassList.length) : 0;
 
-  const filteredUsers = applySortFilter(clientList, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(insuaranceClassList, getComparator(order, orderBy), filterName);
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const emptyRecords = filteredUsers.length === 0;
 
   if (redirect) {
     return <Navigate to="/login" />;
@@ -173,15 +171,15 @@ export default function User() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Clients
+            Insuarance Classes
           </Typography>
           <Button
             variant="contained"
             component={RouterLink}
-            to="/dashboard/client/register"
+            to="/dashboard/insuarance_class/add"
             startIcon={<Iconify icon="eva:plus-fill" />}
           >
-            New Client
+            New Insuarance Class
           </Button>
         </Stack>
 
@@ -199,14 +197,14 @@ export default function User() {
                     order={order}
                     orderBy={orderBy}
                     headLabel={TABLE_HEAD}
-                    rowCount={clientList.length}
+                    rowCount={insuaranceClassList.length}
                     numSelected={selected.length}
                     onRequestSort={handleRequestSort}
                     onSelectAllClick={handleSelectAllClick}
                   />
                   <TableBody>
                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                      const { name, phone, id_number: idNumber } = row;
+                      const { name, description } = row;
                       const isItemSelected = selected.indexOf(name) !== -1;
 
                       return (
@@ -229,8 +227,8 @@ export default function User() {
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="left">{phone}</TableCell>
-                          <TableCell align="left">{idNumber}</TableCell>
+                          <TableCell align="left">{description}</TableCell>
+                          {/* <TableCell align="left">{idNumber}</TableCell> */}
                           {/* <TableCell align="right">
                             <UserMoreMenu clientDetails={row} />
                           </TableCell> */}
@@ -244,7 +242,7 @@ export default function User() {
                     )}
                   </TableBody>
 
-                  {isUserNotFound && (
+                  {emptyRecords && (
                     <TableBody>
                       <TableRow>
                         <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -261,7 +259,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={clientList.length}
+            count={insuaranceClassList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

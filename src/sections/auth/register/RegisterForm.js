@@ -1,19 +1,46 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 // material
 import { Stack, TextField, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // component
 import Iconify from '../../../components/Iconify';
-
 // ----------------------------------------------------------------------
+import { register, resetAuth } from '../../../store/auth/actions';
 
 export default function RegisterForm() {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [redirect, setRedirect] = useState(false);
+
+  const { isLoggedIn, error } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(resetAuth());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setRedirect(true);
+    }
+    if (error) {
+      // specify the errors from registration.
+      if (error === 'User already exists') {
+        setAuthError(() => ({
+          email: 'Email already exists',
+        }));
+        setSubmitting(false);
+      } else {
+        setSubmitting(false);
+      }
+    }
+  }, [isLoggedIn, error]);
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
@@ -31,9 +58,22 @@ export default function RegisterForm() {
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+      setAuthError({}); // clear the errors.
+      setSubmitting(true); // reset submitting state.
+      dispatch(
+        register({
+          first_name: formik.values.firstName,
+          last_name: formik.values.lastName,
+          email: formik.values.email,
+          password: formik.values.password,
+        })
+      ); // registration action.
     },
   });
+
+  if (redirect) {
+    return <Navigate to="/" />;
+  }
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
 
@@ -65,8 +105,8 @@ export default function RegisterForm() {
             type="email"
             label="Email address"
             {...getFieldProps('email')}
-            error={Boolean(touched.email && errors.email)}
-            helperText={touched.email && errors.email}
+            error={Boolean((touched.email && errors.email) || authError.email)}
+            helperText={(touched.email && errors.email) || authError.email}
           />
 
           <TextField
@@ -88,7 +128,7 @@ export default function RegisterForm() {
             helperText={touched.password && errors.password}
           />
 
-          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
+          <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting && submitting}>
             Register
           </LoadingButton>
         </Stack>

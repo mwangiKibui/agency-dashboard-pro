@@ -1,26 +1,49 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link as RouterLink, Navigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // material
 import { Link, Stack, Checkbox, TextField, IconButton, InputAdornment, FormControlLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // component
 import Iconify from '../../../components/Iconify';
 // store
-import {loginSuccessful} from '../../../store/auth/actions';
+import { login, resetAuth } from '../../../store/auth/actions';
 
 // ----------------------------------------------------------------------
 
-
 export default function LoginForm() {
-  const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
+  const { isLoggedIn, error } = useSelector((state) => state.auth);
+  const [redirect, setRedirect] = useState(false);
+  const [authError, setAuthError] = useState({});
+  const [isSubmitting, setSubmitting] = useState(false);
+
   const dispatch = useDispatch();
 
-  
+  useEffect(() => {
+    dispatch(resetAuth());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setRedirect(true);
+    }
+    if (error) {
+      if (error === 'Password incorrect') {
+        setAuthError(() => ({
+          password: error,
+        }));
+        setSubmitting(false);
+      } else if (error === 'User not found') {
+        setAuthError(() => ({
+          email: error,
+        }));
+        setSubmitting(false);
+      }
+    }
+  }, [isLoggedIn, error]);
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
@@ -35,64 +58,40 @@ export default function LoginForm() {
     },
     validationSchema: LoginSchema,
     onSubmit: () => {
-      const {values:{email}} = formik;
-      const {values:{password}} = formik;
+      const {
+        values: { email },
+      } = formik;
+      const {
+        values: { password },
+      } = formik;
 
-      if(email !== "test@shajeagency.com"){
-        formik.setErrors({
-          email: 'Wrong Email Address',
-        });
-        formik.setSubmitting(false);
-        return;
-      }
-
-      if(password !== "123456"){
-        // Password is wrong.
-        formik.setErrors({
-          password: 'Wrong Password',
-        });
-        formik.setSubmitting(false);
-        return;
-      }
-
-      if(!formik.errors.email && !formik.errors.password){
+      if (!formik.errors.email && !formik.errors.password) {
         // Update auth state.
-        dispatch(loginSuccessful({
-          email,
-          "name":"Kennedy Muriuki",
-          "position":"Administrator"
-        }));
-        // Navigate to Dashboard.
-        navigate('/');
+        setAuthError({});
+        // Update the loading state.
+        setSubmitting(true);
+        // dispatch login action.
+        dispatch(
+          login({
+            email,
+            password,
+          })
+        );
       }
     },
   });
-
-  // const { errors, touched, values, handleSubmit, getFieldProps,isSubmitting } = formik;
 
   const handleShowPassword = () => {
     setShowPassword((show) => !show);
   };
 
-  // useEffect(() => {
-  //   // dispatch(loginSuccessful({
-  //   //   id: 1,
-  //   //   name: 'John Doe',
-  //   //   email: '',
-  //   //   password: '',
-  //   //   isLoggedIn: true,
-  //   //   isLoginSuccessful: true,
-  //   //   isLoginFailed: false,
-  //   //   isRegisterSuccessful: false,
-  //   //   isRegisterFailed: false,
-  //   //   error: '',
-  //   // }));
-  //   console.log("things have changed...",formik.errors);
-  // },[formik.errors]);
-  console.log("formik.errors",formik.errors);
+  if (redirect) {
+    return <Navigate to="/" />;
+  }
+
   return (
     <FormikProvider value={formik}>
-      <Form autoComplete="off"  onSubmit={formik.handleSubmit}>
+      <Form autoComplete="off" onSubmit={formik.handleSubmit}>
         <Stack spacing={3}>
           <TextField
             fullWidth
@@ -100,10 +99,9 @@ export default function LoginForm() {
             type="email"
             label="Email address"
             {...formik.getFieldProps('email')}
-            error={Boolean(formik.touched.email && formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
+            error={Boolean((formik.touched.email && formik.errors.email) || authError.email)}
+            helperText={(formik.touched.email && formik.errors.email) || authError.email}
           />
-
           <TextField
             fullWidth
             autoComplete="current-password"
@@ -119,8 +117,8 @@ export default function LoginForm() {
                 </InputAdornment>
               ),
             }}
-            error={Boolean(formik.touched.password && formik.errors.password)}
-            helperText={formik.touched.password && formik.errors.password}
+            error={Boolean((formik.touched.password && formik.errors.password) || authError.password)}
+            helperText={(formik.touched.password && formik.errors.password) || authError.password}
           />
         </Stack>
 
@@ -135,7 +133,13 @@ export default function LoginForm() {
           </Link>
         </Stack>
 
-        <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={formik.isSubmitting}>
+        <LoadingButton
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+          loading={formik.isSubmitting && isSubmitting}
+        >
           Login
         </LoadingButton>
       </Form>

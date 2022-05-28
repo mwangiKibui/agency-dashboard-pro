@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 // material
 import { styled } from '@mui/material/styles';
 // import {Button,Stack} from "@mui/material";
-import { Box, Link, Drawer, Typography, Avatar, } from '@mui/material';
+import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
 // mock
 import account from '../../_mock/account';
 // hooks
@@ -47,6 +48,8 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
 
   const isDesktop = useResponsive('up', 'lg');
 
+  const { user } = useSelector((state) => state.auth);
+
   useEffect(() => {
     if (isOpenSidebar) {
       onCloseSidebar();
@@ -71,7 +74,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             <Avatar src={account.photoURL} alt="photoURL" />
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {account.displayName}
+                {user.name}
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                 {account.role}
@@ -84,7 +87,6 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
       <NavSection navConfig={navConfig} />
 
       <Box sx={{ flexGrow: 1 }} />
-
     </Scrollbar>
   );
 
