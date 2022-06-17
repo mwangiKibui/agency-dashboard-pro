@@ -29,8 +29,9 @@ import SearchNotFound from '../components/SearchNotFound';
 import {
   UserListHead,
   // UserListToolbar,
-  UserMoreMenu,
+  // UserMoreMenu,
 } from '../sections/@dashboard/user';
+import TransactionMoreMenu from '../sections/@dashboard/transactions/TransactionMoreMenu';
 // mock
 // import USERLIST from '../_mock/user';
 // import CLIENTLIST from '../_mock/client';
@@ -244,7 +245,7 @@ export default function User() {
                           <TableCell align="left">{new Date(createdAt).toLocaleDateString()}</TableCell>
                           {/* <TableCell align="left">{idNumber}</TableCell> */}
                           <TableCell align="right">
-                            <UserMoreMenu clientDetails={row} />
+                            <TransactionMoreMenu transactionDetails={row} />
                           </TableCell>
                         </TableRow>
                       );
@@ -260,6 +261,7 @@ export default function User() {
                     <TableBody>
                       <TableRow>
                         <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                          {/* <SearchNotFound searchQuery={filterName} /> */}
                           <SearchNotFound searchQuery={filterName} />
                         </TableCell>
                       </TableRow>

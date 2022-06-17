@@ -17,7 +17,14 @@ import {
 import { LoadingButton } from '@mui/lab';
 // component
 // import Iconify from '../components/Iconify';
-import { fetchOptions, addTransaction } from '../store/transactions/actions';
+import {
+  fetchClientOptions,
+  fetchInsuranceClassOptions,
+  fetchInsuaranceCoverOptions,
+  fetchMotorVehicleTypeOptions,
+  fetchMotorVehicleModelOptions,
+  addTransaction,
+} from '../store/transactions/actions';
 
 // ----------------------------------------------------------------------
 
@@ -25,18 +32,29 @@ export default function RegisterForm() {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
   const { auth_token: authToken } = useSelector((state) => state.auth);
-  const { loading, error, message, options } = useSelector((state) => state.transaction);
+  const {
+    loading,
+    client_options: clientOptions,
+    client_options_loading: clientOptionsLoading,
+    client_options_error: clientOptionsError,
+    insurance_class_options: insuaranceClassOptions,
+    insurance_class_options_loading: insuaranceClassOptionsLoading,
+    insurance_class_options_error: insuaranceClassOptionsError,
+    insurance_cover_options: insuaranceCoverOptions,
+    insurance_cover_options_loading: insuaranceCoverOptionsLoading,
+    insurance_cover_options_error: insuaranceCoverOptionsError,
+    motor_vehicle_type_options: motorVehicleTypeOptions,
+    motor_vehicle_type_options_loading: motorVehicleTypeOptionsLoading,
+    motor_vehicle_type_options_error: motorVehicleTypeOptionsError,
+    motor_vehicle_model_options: motorVehicleModelOptions,
+    motor_vehicle_model_options_loading: motorVehicleModelOptionsLoading,
+    motor_vehicle_model_options_error: motorVehicleModelOptionsError,
+    error,
+    message,
+    options,
+  } = useSelector((state) => state.transaction);
 
   // const [showPassword, setShowPassword] = useState(false);
-  const [clientOptions, setClientOptions] = useState([]);
-
-  const [motorVehicleTypeOptions, setMotorVehicleTypeOptions] = useState([]);
-
-  const [motorVehicleModelOptions, setMotorVehicleModelOptions] = useState([]);
-
-  const [insuaranceCoverOptions, setInsuaranceCoverOptions] = useState([]);
-
-  const [insuaranceClassOptions, setInsuaranceClassOptions] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -45,7 +63,11 @@ export default function RegisterForm() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchOptions(authToken));
+    dispatch(fetchClientOptions(authToken));
+    dispatch(fetchInsuranceClassOptions(authToken));
+    dispatch(fetchInsuaranceCoverOptions(authToken));
+    dispatch(fetchMotorVehicleTypeOptions(authToken));
+    dispatch(fetchMotorVehicleModelOptions(authToken));
   }, [dispatch, authToken]);
 
   const RecordTransactionSchema = Yup.object().shape({
@@ -162,28 +184,20 @@ export default function RegisterForm() {
     },
   });
 
-  useEffect(() => {
-    if (!loading && !error && options) {
-      setClientOptions(options.clients);
-      setMotorVehicleTypeOptions(options.motorVehicleTypeOptions);
-      setMotorVehicleModelOptions(options.motorVehicleModelOptions);
-      setInsuaranceCoverOptions(options.insuaranceCovers);
-      setInsuaranceClassOptions(options.insuaranceClasses);
-    }
+  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, resetForm } = formik;
 
+  useEffect(() => {
     if (!loading && !error && message) {
       setSuccessMessage(message);
       setSubmitting(false);
-      formik.resetForm();
+      resetForm();
     }
 
     if (!loading && error) {
       setErrorMessage(error);
       setSubmitting(false);
     }
-  }, [loading, error, options, formik, message]);
-
-  const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
+  }, [loading, error, options, message]);
 
   console.log('error', errors);
 
@@ -214,11 +228,18 @@ export default function RegisterForm() {
             <InputLabel id="client_id">Client</InputLabel>
             <Select fullWidth id="client_id" {...getFieldProps('client_id')}>
               <MenuItem value="">Select Client</MenuItem>
-              {clientOptions.map((client, index) => (
-                <MenuItem key={index} value={client.id}>
-                  {client.name}
-                </MenuItem>
-              ))}
+              {clientOptionsLoading && !clientOptions && <MenuItem>Loading...</MenuItem>}
+              {clientOptionsLoading && !clientOptions && clientOptionsError && (
+                <MenuItem>{clientOptionsError}</MenuItem>
+              )}
+              {!clientOptionsLoading && !clientOptions && <MenuItem>No Clients Yet</MenuItem>}
+              {!clientOptionsLoading &&
+                clientOptions &&
+                clientOptions.map((client, index) => (
+                  <MenuItem key={index} value={client.id}>
+                    {client.name}
+                  </MenuItem>
+                ))}
             </Select>
           </Stack>
 
@@ -237,11 +258,20 @@ export default function RegisterForm() {
                 }}
               >
                 <MenuItem value="">Select type of motor vehicle</MenuItem>
-                {motorVehicleTypeOptions.map((typeOfMotorVehicle, index) => (
-                  <MenuItem key={index} value={typeOfMotorVehicle.id}>
-                    {typeOfMotorVehicle.name}
-                  </MenuItem>
-                ))}
+                {motorVehicleTypeOptionsLoading && !motorVehicleTypeOptions && <MenuItem>Loading...</MenuItem>}
+                {motorVehicleTypeOptionsLoading && !motorVehicleTypeOptions && motorVehicleTypeOptionsError && (
+                  <MenuItem>{motorVehicleTypeOptionsError}</MenuItem>
+                )}
+                {!motorVehicleTypeOptionsLoading && !motorVehicleTypeOptions && (
+                  <MenuItem>No motor vehicle types yet</MenuItem>
+                )}
+                {!motorVehicleTypeOptionsLoading &&
+                  motorVehicleTypeOptions &&
+                  motorVehicleTypeOptions.map((typeOfMotorVehicle, index) => (
+                    <MenuItem key={index} value={typeOfMotorVehicle.id}>
+                      {typeOfMotorVehicle.name}
+                    </MenuItem>
+                  ))}
                 {/* <MenuItem value="car">Car</MenuItem>
                 <MenuItem value="motorbike">Motorbike</MenuItem>
                 <MenuItem value="truck">Truck</MenuItem>
@@ -261,11 +291,20 @@ export default function RegisterForm() {
                 error={Boolean(touched.model_of_motor_vehicle_id && errors.model_of_motor_vehicle_id)}
               >
                 <MenuItem value="">Select model of motor vehicle</MenuItem>
-                {motorVehicleModelOptions.map((modelOfMotorVehicle, index) => (
-                  <MenuItem key={index} value={modelOfMotorVehicle.id}>
-                    {modelOfMotorVehicle.name}
-                  </MenuItem>
-                ))}
+                {motorVehicleModelOptionsLoading && !motorVehicleModelOptions && <MenuItem>Loading...</MenuItem>}
+                {motorVehicleModelOptionsLoading && !motorVehicleModelOptions && motorVehicleModelOptionsError && (
+                  <MenuItem>{motorVehicleModelOptionsError}</MenuItem>
+                )}
+                {!motorVehicleModelOptionsLoading && !motorVehicleModelOptions && (
+                  <MenuItem>No motor vehicle models yet</MenuItem>
+                )}
+                {!motorVehicleModelOptionsLoading &&
+                  motorVehicleModelOptions &&
+                  motorVehicleModelOptions.map((modelOfMotorVehicle, index) => (
+                    <MenuItem key={index} value={modelOfMotorVehicle.id}>
+                      {modelOfMotorVehicle.name}
+                    </MenuItem>
+                  ))}
                 {/* <MenuItem value="Toyota">Toyota</MenuItem>
                 <MenuItem value="Honda">Honda</MenuItem>
                 <MenuItem value="Nissan">Nissan</MenuItem>
@@ -309,11 +348,20 @@ export default function RegisterForm() {
                 error={Boolean(touched.type_of_insuarance_cover_id && errors.type_of_insuarance_cover_id)}
               >
                 <MenuItem value="">Select type of insuarance cover</MenuItem>
-                {insuaranceCoverOptions.map((typeOfInsuaranceCover, index) => (
-                  <MenuItem key={index} value={typeOfInsuaranceCover.id}>
-                    {typeOfInsuaranceCover.name}
-                  </MenuItem>
-                ))}
+                {insuaranceCoverOptionsLoading && !insuaranceCoverOptions && <MenuItem>Loading...</MenuItem>}
+                {insuaranceCoverOptionsLoading && !insuaranceCoverOptions && insuaranceCoverOptionsError && (
+                  <MenuItem>{insuaranceCoverOptionsError}</MenuItem>
+                )}
+                {!insuaranceCoverOptionsLoading && !insuaranceCoverOptions && (
+                  <MenuItem>No type of insuarance cover yet</MenuItem>
+                )}
+                {!insuaranceCoverOptionsLoading &&
+                  insuaranceCoverOptions &&
+                  insuaranceCoverOptions.map((typeOfInsuaranceCover, index) => (
+                    <MenuItem key={index} value={typeOfInsuaranceCover.id}>
+                      {typeOfInsuaranceCover.name}
+                    </MenuItem>
+                  ))}
                 {/* <MenuItem value="third_party">Third Party</MenuItem>
                 <MenuItem value="comprehensive_cover">Comprehensive Cover</MenuItem> */}
               </Select>
@@ -330,6 +378,13 @@ export default function RegisterForm() {
                 error={Boolean(touched.class_of_insuarance_id && errors.class_of_insuarance_id)}
               >
                 <MenuItem value="">Select class of insuarance</MenuItem>
+                {insuaranceClassOptionsLoading && !insuaranceClassOptions && <MenuItem>Loading...</MenuItem>}
+                {insuaranceClassOptionsLoading && !insuaranceClassOptions && insuaranceClassOptionsError && (
+                  <MenuItem>{insuaranceClassOptionsError}</MenuItem>
+                )}
+                {!insuaranceClassOptionsLoading && !insuaranceClassOptions && (
+                  <MenuItem>No class of insuarance yet</MenuItem>
+                )}
                 {/* <MenuItem value="private_motor">Private motor</MenuItem>
                 <MenuItem value="moto_commercial">Moto Commercial</MenuItem>
                 <MenuItem value="motorcycle_private">Motorcycle Private</MenuItem>
@@ -337,11 +392,13 @@ export default function RegisterForm() {
                 <MenuItem value="psv_unmarked">PSV unmarked</MenuItem>
                 <MenuItem value="taxi">Taxi</MenuItem>
                 <MenuItem value="psv_matatu">PSV Matatu</MenuItem> */}
-                {insuaranceClassOptions.map((classOfInsuarance, index) => (
-                  <MenuItem key={index} value={classOfInsuarance.id}>
-                    {classOfInsuarance.name}
-                  </MenuItem>
-                ))}
+                {!insuaranceClassOptionsLoading &&
+                  insuaranceClassOptions &&
+                  insuaranceClassOptions.map((classOfInsuarance, index) => (
+                    <MenuItem key={index} value={classOfInsuarance.id}>
+                      {classOfInsuarance.name}
+                    </MenuItem>
+                  ))}
               </Select>
             </Stack>
           </Stack>

@@ -1,7 +1,4 @@
 import {
-  FETCH_OPTIONS,
-  FETCH_OPTIONS_SUCCESS,
-  FETCH_OPTIONS_FAILURE,
   ADD_TRANSACTION,
   ADD_TRANSACTION_SUCCESS,
   ADD_TRANSACTION_FAILURE,
@@ -11,10 +8,44 @@ import {
   FETCH_TRANSACTIONS_BY_ID,
   FETCH_TRANSACTIONS_BY_ID_SUCCESS,
   FETCH_TRANSACTIONS_BY_ID_FAILURE,
+  // client options
+  FETCH_CLIENT_OPTIONS,
+  FETCH_CLIENT_OPTIONS_SUCCESS,
+  FETCH_CLIENT_OPTIONS_FAILURE,
+  // insuarance class options
+  FETCH_INSURANCE_CLASS_OPTIONS,
+  FETCH_INSURANCE_CLASS_OPTIONS_SUCCESS,
+  FETCH_INSURANCE_CLASS_OPTIONS_FAILURE,
+  // insuarance cover options
+  FETCH_INSURANCE_COVER_OPTIONS,
+  FETCH_INSURANCE_COVER_OPTIONS_SUCCESS,
+  FETCH_INSURANCE_COVER_OPTIONS_FAILURE,
+  // motor vehicle type options
+  FETCH_MOTOR_VEHICLE_TYPE_OPTIONS,
+  FETCH_MOTOR_VEHICLE_TYPE_OPTIONS_SUCCESS,
+  FETCH_MOTOR_VEHICLE_TYPE_OPTIONS_FAILURE,
+  // motor vehicle model options
+  FETCH_MOTOR_VEHICLE_MODEL_OPTIONS,
+  FETCH_MOTOR_VEHICLE_MODEL_OPTIONS_SUCCESS,
+  FETCH_MOTOR_VEHICLE_MODEL_OPTIONS_FAILURE,
 } from './types';
 
 const initialState = {
-  options: [],
+  client_options: [],
+  client_options_loading: false,
+  client_options_error: null,
+  insurance_class_options: [],
+  insurance_class_options_loading: false,
+  insurance_class_options_error: null,
+  insurance_cover_options: [],
+  insurance_cover_options_loading: false,
+  insurance_cover_options_error: null,
+  motor_vehicle_type_options: [],
+  motor_vehicle_type_options_loading: false,
+  motor_vehicle_type_options_error: null,
+  motor_vehicle_model_options: [],
+  motor_vehicle_model_options_loading: false,
+  motor_vehicle_model_options_error: null,
   loading: false,
   error: null,
   message: null,
@@ -24,24 +55,100 @@ const initialState = {
 
 export default (state = initialState, { type, payload } = {}) => {
   switch (type) {
-    case FETCH_OPTIONS:
+    case FETCH_CLIENT_OPTIONS:
       return {
         ...state,
-        loading: true,
-        error: null,
+        client_options_loading: true,
+        client_options_error: null,
       };
-    case FETCH_OPTIONS_SUCCESS:
+    case FETCH_CLIENT_OPTIONS_SUCCESS:
       return {
         ...state,
-        loading: false,
-        options: payload,
-        error: null,
+        client_options_loading: false,
+        client_options: payload,
+        client_options_error: null,
       };
-    case FETCH_OPTIONS_FAILURE:
+    case FETCH_CLIENT_OPTIONS_FAILURE:
       return {
         ...state,
-        loading: false,
-        error: payload,
+        client_options_loading: false,
+        client_options_error: payload,
+      };
+    case FETCH_INSURANCE_CLASS_OPTIONS:
+      return {
+        ...state,
+        insurance_class_options_loading: true,
+        insurance_class_options_error: null,
+      };
+    case FETCH_INSURANCE_CLASS_OPTIONS_SUCCESS:
+      return {
+        ...state,
+        insurance_class_options_loading: false,
+        insurance_class_options: payload,
+        insurance_class_options_error: null,
+      };
+    case FETCH_INSURANCE_CLASS_OPTIONS_FAILURE:
+      return {
+        ...state,
+        insurance_class_options_loading: false,
+        insurance_class_options_error: payload,
+      };
+    case FETCH_INSURANCE_COVER_OPTIONS:
+      return {
+        ...state,
+        insurance_cover_options_loading: true,
+        insurance_cover_options_error: null,
+      };
+    case FETCH_INSURANCE_COVER_OPTIONS_SUCCESS:
+      return {
+        ...state,
+        insurance_cover_options_loading: false,
+        insurance_cover_options: payload,
+        insurance_cover_options_error: null,
+      };
+    case FETCH_INSURANCE_COVER_OPTIONS_FAILURE:
+      return {
+        ...state,
+        insurance_cover_options_loading: false,
+        insurance_cover_options_error: payload,
+      };
+    case FETCH_MOTOR_VEHICLE_TYPE_OPTIONS:
+      return {
+        ...state,
+        motor_vehicle_type_options_loading: true,
+        motor_vehicle_type_options_error: null,
+      };
+    case FETCH_MOTOR_VEHICLE_TYPE_OPTIONS_SUCCESS:
+      return {
+        ...state,
+        motor_vehicle_type_options_loading: false,
+        motor_vehicle_type_options: payload,
+        motor_vehicle_type_options_error: null,
+      };
+    case FETCH_MOTOR_VEHICLE_TYPE_OPTIONS_FAILURE:
+      return {
+        ...state,
+        motor_vehicle_type_options_loading: false,
+        motor_vehicle_type_options_error: payload,
+      };
+    case FETCH_MOTOR_VEHICLE_MODEL_OPTIONS:
+      return {
+        ...state,
+        motor_vehicle_model_options_loading: true,
+        motor_vehicle_model_options_error: null,
+      };
+    case FETCH_MOTOR_VEHICLE_MODEL_OPTIONS_SUCCESS:
+      return {
+        ...state,
+        motor_vehicle_model_options_loading: false,
+        motor_vehicle_model_options: payload,
+        motor_vehicle_model_options_error: null,
+      };
+    case FETCH_MOTOR_VEHICLE_MODEL_OPTIONS_FAILURE:
+      return {
+        ...state,
+        motor_vehicle_model_options_loading: false,
+        motor_vehicle_model_options_error: payload,
       };
     case ADD_TRANSACTION:
       return {

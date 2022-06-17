@@ -80,11 +80,11 @@ export default function User() {
   const { insuaranceCovers, isFetching, error } = useSelector((state) => state.insuaranceCover);
   const { auth_token: authToken } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const [redirect,setRedirect] = useState(true);
+  const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     dispatch(fetchInsuranceCovers(authToken));
-  }, [dispatch,authToken]);
+  }, [dispatch, authToken]);
 
   useEffect(() => {
     if (insuaranceCovers) {
@@ -96,6 +96,7 @@ export default function User() {
     if (error === 'Invalid token') {
       setRedirect(true);
     }
+    console.log('error', error);
   }, [error]);
 
   const [insuaranceCoverList, setInsuaranceCoverList] = useState([]);
@@ -164,8 +165,8 @@ export default function User() {
 
   const emptyRecords = filteredUsers.length === 0;
 
-  if(redirect){
-    return <Navigate to="/login" />
+  if (redirect) {
+    return <Navigate to="/login" />;
   }
 
   return (

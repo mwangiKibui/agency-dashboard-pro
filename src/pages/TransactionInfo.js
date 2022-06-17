@@ -126,11 +126,11 @@ export default function TransactionInfo() {
                     </TableRow>
                     <TableRow>
                       <TableCell>Insuarance Cover Period</TableCell>
-                      <TableCell>{transactionData?.insuarance_cover_period} Months</TableCell>
+                      <TableCell>{transactionData?.insuarance_cover_period_in_months} Months</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Insuarance Cover Extension</TableCell>
-                      <TableCell>{transactionData?.insuarance_cover_extension} Months</TableCell>
+                      <TableCell>{transactionData?.insuarance_cover_extension_in_months} Months</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Time for Renewal Posting</TableCell>

@@ -8,10 +8,10 @@ import Iconify from '../../../components/Iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu({ clientDetails }) {
+export default function UserMoreMenu({ userDetails }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   return (
     <>
       <IconButton ref={ref} onClick={() => setIsOpen(true)}>
@@ -28,17 +28,17 @@ export default function UserMoreMenu({ clientDetails }) {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem
+        {/* <MenuItem
           sx={{ color: 'text.secondary' }}
           onClick={() => {
-            navigate(`/dashboard/transaction/info/${clientDetails._id}`);
+            navigate(`/dashboard/user/info/${userDetails._id}`);
           }}
         >
           <ListItemIcon>
             <Iconify icon="eva:eye-outline" width={24} height={24} />
           </ListItemIcon>
           <ListItemText primary="View more" primaryTypographyProps={{ variant: 'body2' }} />
-        </MenuItem>
+        </MenuItem> */}
 
         <MenuItem sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
@@ -47,7 +47,11 @@ export default function UserMoreMenu({ clientDetails }) {
           <ListItemText primary="Deactivate" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
 
-        <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
+        <MenuItem
+          component={RouterLink}
+          to={`/dashboard/user/edit/${userDetails._id}`}
+          sx={{ color: 'text.secondary' }}
+        >
           <ListItemIcon>
             <Iconify icon="eva:edit-fill" width={24} height={24} />
           </ListItemIcon>
@@ -59,5 +63,5 @@ export default function UserMoreMenu({ clientDetails }) {
 }
 
 UserMoreMenu.propTypes = {
-  clientDetails: PropTypes.object,
+  userDetails: PropTypes.object,
 };

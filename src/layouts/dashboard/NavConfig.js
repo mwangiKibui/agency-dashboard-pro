@@ -16,6 +16,16 @@ const navConfig = [
     path: '/dashboard/client/list',
     icon: getIcon('eva:people-fill'),
   },
+  {
+    title: 'users',
+    path: '/dashboard/users/list',
+    icon: getIcon('eva:people-fill'),
+  },
+  {
+    title: 'roles',
+    path: '/dashboard/roles/list',
+    icon: getIcon('eva:file-text-fill'),
+  },
   // {
   //   title: 'agents',
   //   path: '/dashboard/agent',

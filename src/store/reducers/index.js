@@ -6,6 +6,8 @@ import insuaranceCoverReducer from '../insuarance_covers/reducer';
 import motorVehicleModelsReducer from '../motor_vehicle_models/reducer';
 import motorVehicleTypesReducer from '../motor_vehicle_types/reducer';
 import transactionReducer from '../transactions/reducer';
+import roleReducer from '../roles/reducer';
+import usersReducer from '../users/reducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -15,4 +17,6 @@ export default combineReducers({
   motorVehicleModel: motorVehicleModelsReducer,
   motorVehicleType: motorVehicleTypesReducer,
   transaction: transactionReducer,
+  roles: roleReducer,
+  users: usersReducer,
 });

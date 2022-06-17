@@ -3,14 +3,17 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from './layouts/dashboard';
 import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 //
-import Blog from './pages/Blog';
+// import Blog from './pages/Blog';
 // import User from './pages/User';
 import Client from './pages/Client';
 import InsuaranceClass from './pages/InsuaranceClass';
 import InsuaranceCover from './pages/InsuaranceCover';
 import MotorVehicleModel from './pages/MotorVehicleModel';
 import MotorVehicleType from './pages/MotorVehicleType';
-import Agent from './pages/Agent';
+import Role from './pages/Role';
+import AddRole from './pages/AddRole';
+import User from './pages/User';
+import AddUser from './pages/AddUser';
 import Login from './pages/Login';
 import NotFound from './pages/Page404';
 import Register from './pages/Register';
@@ -39,7 +42,10 @@ export default function Router() {
         { path: 'insuarance_cover/list', element: <InsuaranceCover /> },
         { path: 'motor_vehicle_model/list', element: <MotorVehicleModel /> },
         { path: 'motor_vehicle_type/list', element: <MotorVehicleType /> },
-        { path: 'agent', element: <Agent /> },
+        { path: 'roles/list', element: <Role /> },
+        { path: 'roles/add', element: <AddRole /> },
+        { path: 'users/list', element: <User /> },
+        { path: 'users/add', element: <AddUser /> },
         // { path: 'products', element: <Products /> },
         { path: 'transaction', element: <Transaction /> },
         { path: 'record_transaction', element: <AddClientTransaction /> },
@@ -49,7 +55,7 @@ export default function Router() {
         { path: 'motor_vehicle_model/add', element: <AddMotorVehicleModel /> },
         { path: 'motor_vehicle_type/add', element: <AddMotorVehicleType /> },
         { path: 'transaction/info/:id', element: <TransactionInfo /> },
-        { path: 'blog', element: <Blog /> },
+        // { path: 'blog', element: <Blog /> },
       ],
     },
     {
