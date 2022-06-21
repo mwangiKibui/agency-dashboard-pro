@@ -3,7 +3,7 @@
 // @mui
 // import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // components
 import Page from '../components/Page';
@@ -28,11 +28,28 @@ export default function DashboardApp() {
   // const theme = useTheme();
   const { auth_token: authToken } = useSelector((state) => state.auth);
   const { clients, users, transactions, loading } = useSelector((state) => state.dashboard);
+  const [clientsCount, setClientsCount] = useState(0);
+  const [usersCount, setUsersCount] = useState(0);
+  const [transactionsCount, setTransactionsCount] = useState(0);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getDashboardStats(authToken));
   }, [dispatch, authToken]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (clients) {
+        setClientsCount(clients);
+      }
+      if (users) {
+        setUsersCount(users);
+      }
+      if (transactions) {
+        setTransactionsCount(transactions);
+      }
+    }
+  }, [loading, clients, users, transactions]);
 
   return (
     <Page title="Dashboard">
@@ -45,7 +62,7 @@ export default function DashboardApp() {
           <Grid item xs={12} sm={6} md={4}>
             <AppWidgetSummary
               title={loading ? `Loading Clients` : 'Clients'}
-              total={clients}
+              total={clientsCount}
               icon={'ant-design:android-filled'}
             />
           </Grid>
@@ -53,7 +70,7 @@ export default function DashboardApp() {
           <Grid item xs={12} sm={6} md={4}>
             <AppWidgetSummary
               title={loading ? `Loading Users` : `Users`}
-              total={users}
+              total={usersCount}
               color="info"
               icon={'ant-design:apple-filled'}
             />
@@ -62,7 +79,7 @@ export default function DashboardApp() {
           <Grid item xs={12} sm={6} md={4}>
             <AppWidgetSummary
               title={loading ? `Loading Transactions` : `Transactions`}
-              total={transactions}
+              total={transactionsCount}
               color="warning"
               icon={'ant-design:windows-filled'}
             />
