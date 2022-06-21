@@ -3,6 +3,8 @@
 // @mui
 // import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 // components
 import Page from '../components/Page';
 // import Iconify from '../components/Iconify';
@@ -18,12 +20,20 @@ import {
   // AppCurrentSubject,
   // AppConversionRates,
 } from '../sections/@dashboard/app';
+import { getDashboardStats } from '../store/dashboard/actions';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardApp() {
   // const theme = useTheme();
-  
+  const { auth_token: authToken } = useSelector((state) => state.auth);
+  const { clients, users, transactions, loading } = useSelector((state) => state.dashboard);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getDashboardStats(authToken));
+  }, [dispatch, authToken]);
+
   return (
     <Page title="Dashboard">
       <Container maxWidth="xl">
@@ -32,21 +42,35 @@ export default function DashboardApp() {
         </Typography>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Clients" total={714000} icon={'ant-design:android-filled'} />
+          <Grid item xs={12} sm={6} md={4}>
+            <AppWidgetSummary
+              title={loading ? `Loading Clients` : 'Clients'}
+              total={clients}
+              icon={'ant-design:android-filled'}
+            />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Sales" total={1352831} color="info" icon={'ant-design:apple-filled'} />
+          <Grid item xs={12} sm={6} md={4}>
+            <AppWidgetSummary
+              title={loading ? `Loading Users` : `Users`}
+              total={users}
+              color="info"
+              icon={'ant-design:apple-filled'}
+            />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Transactions" total={1723315} color="warning" icon={'ant-design:windows-filled'} />
+          <Grid item xs={12} sm={6} md={4}>
+            <AppWidgetSummary
+              title={loading ? `Loading Transactions` : `Transactions`}
+              total={transactions}
+              color="warning"
+              icon={'ant-design:windows-filled'}
+            />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          {/* <Grid item xs={12} sm={6} md={3}>
             <AppWidgetSummary title="Agents" total={234} color="error" icon={'ant-design:bug-filled'} />
-          </Grid>
+          </Grid> */}
 
           {/* <Grid item xs={12} md={6} lg={8}>
             <AppWebsiteVisits
@@ -209,7 +233,6 @@ export default function DashboardApp() {
               ]}
             />
           </Grid> */}
-
         </Grid>
       </Container>
     </Page>

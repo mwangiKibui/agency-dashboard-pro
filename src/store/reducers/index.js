@@ -8,6 +8,7 @@ import motorVehicleTypesReducer from '../motor_vehicle_types/reducer';
 import transactionReducer from '../transactions/reducer';
 import roleReducer from '../roles/reducer';
 import usersReducer from '../users/reducer';
+import dashboardReducer from '../dashboard/reducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -19,4 +20,5 @@ export default combineReducers({
   transaction: transactionReducer,
   roles: roleReducer,
   users: usersReducer,
+  dashboard: dashboardReducer,
 });
